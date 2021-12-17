@@ -1,0 +1,32 @@
+* {
+  box-sizing: inherit;
+}
+
+body {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  font-size: 16px;
+  font-weight: 400;
+  font-family: system-ui;
+  overflow-x: hidden;
+}
+
+.center {
+  width: 600px;
+  min-height: 300px;
+  background: #eee;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+}
+
+.blur {
+  filter: blur(5px);
+  pointer-events: none;
+  cursor: not-allowed;
+}

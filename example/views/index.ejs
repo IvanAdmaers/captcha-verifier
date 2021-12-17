@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Captcha verifier example</title>
+  <link rel="stylesheet" href="/global.css">
+  <script>
+    // Render reCaptcha 2
+    const reCaptcha2OnloadCallback = () => {
+      grecaptcha.render(
+        'recaptcha2',
+        {
+          sitekey: '<%= reCaptcha2PublicKey %>',
+          callback: 'reCaptcha2Handler',
+        }
+    );
+  };
+
+  window.reCaptcha2OnloadCallback = reCaptcha2OnloadCallback;
+
+  // Render hCaptcha
+  const hCaptchaOnloadCallback = () => {
+    hcaptcha.render('hcaptcha',
+      {
+        sitekey: '<%= hCaptchaPublicKey %>',
+        callback: 'handleHCaptcha',
+      }
+    );
+  };
+
+  window.hCaptchaOnloadCallback = hCaptchaOnloadCallback;
+
+  // Helper functions
+  const doCaptchaFetch = async (url = '', token = '') => {
+    try {
+      const req = await fetch(url, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ token }),
+      });
+
+      const { success, response } = await req.json();
+
+      return { success, response };
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  const setResultText = (element, captchaService = '', success = false, response = {}, blurClass = 'blur') => {
+    const text = `${captchaService} was passed: <strong style="color:${success ? 'green' : 'red'}">${success}</strong>`;
+
+    element.textContent = '';
+
+    element.insertAdjacentHTML('afterbegin', `<p>${text}</p><p><code>${JSON.stringify(response, null, 2)}</code></p>`);
+
+    element.classList.remove(blurClass);
+  };
+
+  // Handle ReCaptcha 2
+  const reCaptcha2Handler = async (token = '') => {
+    const messageArea = document.getElementById('recaptcha2-message');
+
+    messageArea.classList.add('blur');
+
+    try {
+      const { success, response } = await doCaptchaFetch('/recaptcha2', token);
+
+      setResultText(messageArea, 'ReCaptcha 2', success, response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  window.reCaptcha2Handler = reCaptcha2Handler;
+
+  // Handle hCaptcha
+  const handleHCaptcha = async (token = '') => {
+    const messageArea = document.getElementById('hcaptcha-message');
+
+    messageArea.classList.add('blur');
+
+    try {
+      const { success, response } = await doCaptchaFetch('/hcaptcha', token);
+
+      setResultText(messageArea, 'hCaptcha', success, response);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  window.handleHCaptcha = handleHCaptcha;
+
+  // Handle ReCaptcha 3
+  window.addEventListener('DOMContentLoaded', () => {
+  const recaptcha3Trigger = document.getElementById('check-recaptcha3');
+
+  const handleReCaptcha3 = async () => {
+    const messageArea = document.getElementById('recaptcha3-message');
+
+    messageArea.classList.add('blur');
+
+    grecaptcha.ready(() => {
+      (async () => {
+        const token = await grecaptcha.execute('<%= reCaptcha3PublicKey %>', {
+          action: 'test',
+        });
+
+        try {
+          const { success, response } = await doCaptchaFetch(
+            '/recaptcha3',
+            token
+          );
+
+          setResultText(messageArea, 'ReCaptcha 3', success, response);
+        } catch (e) {
+          console.log(e);
+        }
+      })();
+    });
+  };
+
+  recaptcha3Trigger.addEventListener('click', handleReCaptcha3);
+  });
+  </script>
+  <script src="https://www.google.com/recaptcha/api.js?onload=reCaptcha2OnloadCallback&render=onload" async></script>
+  <script src="https://js.hcaptcha.com/1/api.js?hl=en&onload=hCaptchaOnloadCallback&render=onload" async></script>
+  <script src="https://www.google.com/recaptcha/api.js?render=<%= reCaptcha3PublicKey %>" async></script>
+</head>
+<body>
+  <div class="center">
+    <h1>ReCaptcha 2</h1>
+    <div id="recaptcha2"></div>
+    <div id="recaptcha2-message"></div>
+    <hr />
+    <h1>hCaptcha</h1>
+    <div id="hcaptcha"></div>
+    <div id="hcaptcha-message"></div>
+    <h1>ReCaptcha 3 👉</h1>
+    <div id="recaptcha3-message"></div>
+    <button id="check-recaptcha3">Check</button>
+  </div>
+</body>
+</html>

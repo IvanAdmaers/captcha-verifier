@@ -1,0 +1,32 @@
+{
+  "name": "captcha-verifier",
+  "version": "1.0.0",
+  "description": "Captcha verifier for NodeJS",
+  "main": "index.js",
+  "scripts": {
+    "test": "jest"
+  },
+  "keywords": [
+    "captcha",
+    "verifier",
+    "captcha verifier",
+    "captcha node",
+    "captcha verifier node",
+    "captcha verifier nodejs",
+    "google captcha verifier",
+    "recaptcha verifier",
+    "google recaptcha verifier",
+    "recaptcha verifier node",
+    "hcaptcha verifier",
+    "hcaptcha verifier nide",
+    "recaptcha",
+    "hcaptcha",
+    "recaptcha verifier nodejs",
+    "hcaptcha verifier nodejs"
+  ],
+  "author": "Ivan Admaers",
+  "license": "MIT",
+  "devDependencies": {
+    "jest": "^27.4.4"
+  }
+}
