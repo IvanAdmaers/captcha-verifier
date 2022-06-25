@@ -1,12 +1,31 @@
-const fetch = require('../Fetch');
+import fetch from '../Fetch';
+import { stringifyParams } from '../../utills';
+import type { ICaptchaResponse } from '../../types';
 
-const { stringifyParams } = require('../../utills');
+const reCaptchaV2: '_reCaptchaV2' = '_reCaptchaV2';
+const reCaptchaV3: '_reCaptchaV3' = '_reCaptchaV3';
+const hCaptcha: '_hCaptcha' = '_hCaptcha';
 
-const reCaptchaV2 = '_reCaptchaV2';
-const reCaptchaV3 = '_reCaptchaV3';
-const hCaptcha = '_hCaptcha';
+interface ICaptchaConfig {
+  secretKey: string;
+  url: string;
+  passingScore?: number;
+}
+
+interface IConfigParams {
+  reCaptchaV2SecretKey?: string;
+  reCaptchaV3SecretKey?: string;
+  reCaptchaV3PassingScore?: number;
+  hCaptchaSecretKey?: string;
+}
+
+type ServiceType = typeof reCaptchaV2 | typeof reCaptchaV3 | typeof hCaptcha;
 
 class Verifier {
+  _reCaptchaV2: ICaptchaConfig;
+  _reCaptchaV3: ICaptchaConfig;
+  _hCaptcha: ICaptchaConfig;
+
   constructor() {
     this._reCaptchaV2 = {
       secretKey: '',
@@ -33,7 +52,7 @@ class Verifier {
   /**
    * @private
    */
-  _getSecretKey(service = '') {
+  _getSecretKey(service: ServiceType) {
     const secretKey = this[service].secretKey;
 
     if (!secretKey) {
@@ -49,17 +68,13 @@ class Verifier {
    * @param {Object} params - Config object
    * @returns {this}
    */
-  config({
+  public config({
     reCaptchaV2SecretKey,
     reCaptchaV3SecretKey,
     reCaptchaV3PassingScore,
     hCaptchaSecretKey,
-  } = params) {
-    if (
-      !reCaptchaV2SecretKey &&
-      !reCaptchaV3SecretKey &&
-      !hCaptchaSecretKey
-    ) {
+  }: IConfigParams) {
+    if (!reCaptchaV2SecretKey && !reCaptchaV3SecretKey && !hCaptchaSecretKey) {
       throw new Error(
         `Secket keys aren't passed to either reCaptcha or hCaptcha`
       );
@@ -74,7 +89,7 @@ class Verifier {
     }
 
     if (reCaptchaV3PassingScore) {
-      this._reCaptchaV3.passingScore = reCaptchaV3PassingScore;
+      this._reCaptchaV3.passingScore = +reCaptchaV3PassingScore;
     }
 
     if (hCaptchaSecretKey) {
@@ -88,7 +103,12 @@ class Verifier {
    * @async
    * @private
    */
-  async _verifier(service = '', token = '', ip = '', siteKey = '') {
+  async _verifier(
+    service: ServiceType,
+    token?: string,
+    ip?: string,
+    siteKey?: string
+  ) {
     if (!token) {
       throw new Error('Captcha token is undefined');
     }
@@ -97,7 +117,17 @@ class Verifier {
     const url = this[service].url;
     const method = 'POST';
 
-    const requestParams = { secret: secretKey, response: token };
+    interface IRequestParams {
+      secret: string;
+      response: string;
+      ip?: string;
+      siteKey?: string;
+    }
+
+    const requestParams: IRequestParams = {
+      secret: secretKey,
+      response: token,
+    };
 
     if (ip) {
       requestParams.ip = ip;
@@ -117,14 +147,21 @@ class Verifier {
   /**
    * @private
    */
-  _getResult(captchaResponse = {}) {
+  _getResult(
+    captchaResponse: ICaptchaResponse
+  ): (boolean | ICaptchaResponse)[] {
     let captchaSuccess = captchaResponse.success;
 
     const captchaScope = captchaResponse.score;
 
     // If ReCaptcha 3
     if (captchaScope && captchaSuccess) {
-      if (captchaScope < this._reCaptchaV3.passingScore) {
+      const reCaptchaV3PassingScore = this._reCaptchaV3.passingScore;
+
+      if (
+        reCaptchaV3PassingScore !== undefined &&
+        captchaScope < reCaptchaV3PassingScore
+      ) {
         captchaSuccess = false;
       }
     }
@@ -141,7 +178,7 @@ class Verifier {
    * @param {string} [ip=''] ip - The optional user's IP address
    * @returns {<Promise>Array} -
    */
-  reCaptchaV2(token = '', ip = '') {
+  public reCaptchaV2(token: string, ip?: string) {
     return this._verifier(reCaptchaV2, token, ip);
   }
 
@@ -152,7 +189,7 @@ class Verifier {
    * @param {string} [ip=''] ip - The optional user's IP address
    * @returns {<Promise>Array} -
    */
-  reCaptchaV3(token = '', ip = '') {
+  public reCaptchaV3(token: string, ip?: string) {
     return this._verifier(reCaptchaV3, token, ip);
   }
 
@@ -164,9 +201,9 @@ class Verifier {
    * @param {string} [siteKey=''] - The optional sitekey you expect to see
    * @returns {<Promise>Array} -
    */
-  hCaptcha(token = '', ip = '', siteKey = '') {
+  public hCaptcha(token: string, ip?: string, siteKey?: string) {
     return this._verifier(hCaptcha, token, ip, siteKey);
   }
 }
 
-module.exports = new Verifier();
+export default new Verifier();

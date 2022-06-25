@@ -1,7 +1,7 @@
-const fetch = require('./Fetch');
+import fetch from './Fetch';
 
 describe('fetch class', () => {
   it('should throw an error when url was not passed', () => {
-    return expect(fetch.do(null)).rejects.toThrow();
+    return expect(fetch.do('', { body: '' })).rejects.toThrow();
   });
 });

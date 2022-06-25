@@ -1,4 +1,12 @@
-const https = require('https');
+import https from 'https';
+
+import type { ICaptchaResponse } from '../../types';
+
+interface IDoParams {
+  method?: string;
+  ContentType?: string;
+  body: string;
+}
 
 class Fetch {
   /**
@@ -9,14 +17,14 @@ class Fetch {
    * @param {Object} options - Fetch options
    * @returns {<Promise>Object} Server response
    */
-  do(
-    url = '',
+  public do(
+    url: string,
     {
       method = 'GET',
       ContentType = 'application/x-www-form-urlencoded',
       body,
-    } = {}
-  ) {
+    }: IDoParams
+  ): Promise<ICaptchaResponse> {
     return new Promise((resolve, reject) => {
       const options = {
         method,
@@ -32,7 +40,7 @@ class Fetch {
 
         res
           .on('error', reject)
-          .on('data', (chunk) => {
+          .on('data', (chunk: string) => {
             buffer += chunk;
           })
           .on('end', () => resolve(JSON.parse(buffer)));
@@ -47,4 +55,4 @@ class Fetch {
   }
 }
 
-module.exports = new Fetch();
+export default new Fetch();

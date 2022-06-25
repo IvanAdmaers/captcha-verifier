@@ -1,4 +1,4 @@
-const stringifyParams = require('./stringifyParams');
+import stringifyParams from '.';
 
 describe('stringifyParams', () => {
   it('should returns a correct value', () => {
