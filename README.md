@@ -129,6 +129,7 @@ response score > setted in config score = *true*
 
 # Run:
 npm ci i
+npm run dev
 
 cd /example
 
