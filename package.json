@@ -4,7 +4,8 @@
   "description": "Captcha verifier for NodeJS",
   "main": "index.js",
   "scripts": {
-    "test": "jest"
+    "test": "jest",
+    "dev": "npx tsc --watch & nodemon -q dist/index.js"
   },
   "keywords": [
     "captcha",
