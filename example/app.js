@@ -14,7 +14,7 @@ const {
 } = process.env;
 
 // Captcha Verifier
-const verifier = require('../index');
+const verifier = require('../dist');
 
 verifier.config({
   reCaptchaV2SecretKey: RECAPTCHA_2_SECRET_KEY,
