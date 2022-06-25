@@ -1,6 +1,6 @@
 {
   "name": "captcha-verifier",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Captcha verifier for NodeJS",
   "main": "index.js",
   "scripts": {
