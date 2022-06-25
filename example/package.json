@@ -2,9 +2,10 @@
   "name": "example",
   "version": "1.0.0",
   "description": "Captcha verifier example",
-  "main": "app.js",
+  "main": "src/app.ts",
   "scripts": {
-    "dev": "npx tsc --watch & nodemon dist/app.js"
+    "dev": "npx tsc --watch & nodemon dist/app.js",
+    "prepare": "npx tsc --build"
   },
   "license": "MIT",
   "devDependencies": {
