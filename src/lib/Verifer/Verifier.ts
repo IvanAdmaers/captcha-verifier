@@ -22,9 +22,9 @@ interface IConfigParams {
 type ServiceType = typeof reCaptchaV2 | typeof reCaptchaV3 | typeof hCaptcha;
 
 class Verifier {
-  _reCaptchaV2: ICaptchaConfig;
-  _reCaptchaV3: ICaptchaConfig;
-  _hCaptcha: ICaptchaConfig;
+  private _reCaptchaV2: ICaptchaConfig;
+  private _reCaptchaV3: ICaptchaConfig;
+  private _hCaptcha: ICaptchaConfig;
 
   constructor() {
     this._reCaptchaV2 = {
@@ -49,10 +49,7 @@ class Verifier {
     this.hCaptcha = this.hCaptcha.bind(this);
   }
 
-  /**
-   * @private
-   */
-  _getSecretKey(service: ServiceType) {
+  private _getSecretKey(service: ServiceType) {
     const secretKey = this[service].secretKey;
 
     if (!secretKey) {
@@ -64,16 +61,13 @@ class Verifier {
 
   /**
    * This method configurates the verifier config
-   *
-   * @param {Object} params - Config object
-   * @returns {this}
    */
   public config({
     reCaptchaV2SecretKey,
     reCaptchaV3SecretKey,
     reCaptchaV3PassingScore,
     hCaptchaSecretKey,
-  }: IConfigParams) {
+  }: IConfigParams): this {
     if (!reCaptchaV2SecretKey && !reCaptchaV3SecretKey && !hCaptchaSecretKey) {
       throw new Error(
         `Secket keys aren't passed to either reCaptcha or hCaptcha`
@@ -99,11 +93,7 @@ class Verifier {
     return this;
   }
 
-  /**
-   * @async
-   * @private
-   */
-  async _verifier(
+  private async _verifier(
     service: ServiceType,
     token?: string,
     ip?: string,
@@ -144,10 +134,7 @@ class Verifier {
     return this._getResult(res);
   }
 
-  /**
-   * @private
-   */
-  _getResult(
+  private _getResult(
     captchaResponse: ICaptchaResponse
   ): (boolean | ICaptchaResponse)[] {
     let captchaSuccess = captchaResponse.success;
@@ -173,10 +160,6 @@ class Verifier {
 
   /**
    * This method does reCaptcha V2 token verification
-   *
-   * @param {string} token - The verification token you received when the user completed the captcha on your site
-   * @param {string} [ip=''] ip - The optional user's IP address
-   * @returns {<Promise>Array} -
    */
   public reCaptchaV2(token: string, ip?: string) {
     return this._verifier(reCaptchaV2, token, ip);
@@ -184,10 +167,6 @@ class Verifier {
 
   /**
    * This method does reCaptcha V3 token verification
-   *
-   * @param {string} token - The verification token you received when the user completed the captcha on your site
-   * @param {string} [ip=''] ip - The optional user's IP address
-   * @returns {<Promise>Array} -
    */
   public reCaptchaV3(token: string, ip?: string) {
     return this._verifier(reCaptchaV3, token, ip);
@@ -195,11 +174,6 @@ class Verifier {
 
   /**
    * This method does hCaptcha V1 token verification
-   *
-   * @param {string} token - The verification token you received when the user completed the captcha on your site
-   * @param {string} [ip=''] ip - The optional user's IP address
-   * @param {string} [siteKey=''] - The optional sitekey you expect to see
-   * @returns {<Promise>Array} -
    */
   public hCaptcha(token: string, ip?: string, siteKey?: string) {
     return this._verifier(hCaptcha, token, ip, siteKey);
