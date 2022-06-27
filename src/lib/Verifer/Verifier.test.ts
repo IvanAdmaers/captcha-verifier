@@ -31,25 +31,25 @@ describe('verifier class', () => {
   it('should set reCaptcha V2 secret key', () => {
     verifier.config({ reCaptchaV2SecretKey });
 
-    expect(verifier._reCaptchaV2.secretKey).toBe(reCaptchaV2SecretKey);
+    expect(verifier['_reCaptchaV2'].secretKey).toBe(reCaptchaV2SecretKey);
   });
 
   it('should set reCaptcha V3 secret key', () => {
     verifier.config({ reCaptchaV3SecretKey });
 
-    expect(verifier._reCaptchaV3.secretKey).toBe(reCaptchaV3SecretKey);
+    expect(verifier['_reCaptchaV3'].secretKey).toBe(reCaptchaV3SecretKey);
   });
 
   it('should set reCaptcha V3 passing score', () => {
     verifier.config({ reCaptchaV3SecretKey, reCaptchaV3PassingScore });
 
-    expect(verifier._reCaptchaV3.passingScore).toBe(reCaptchaV3PassingScore);
+    expect(verifier['_reCaptchaV3'].passingScore).toBe(reCaptchaV3PassingScore);
   });
 
   it('should set hCaptcha secret key', () => {
     verifier.config({ hCaptchaSecretKey });
 
-    expect(verifier._hCaptcha.secretKey).toBe(hCaptchaSecretKey);
+    expect(verifier['_hCaptcha'].secretKey).toBe(hCaptchaSecretKey);
   });
 
   it('should throw an error if reCaptcha V2 secret key was not set', () => {
@@ -69,7 +69,7 @@ describe('verifier class', () => {
 
     const response = getReCaptcha3Response(0.3);
 
-    const [success] = verifier._getResult(response);
+    const [success] = verifier['_getResult'](response);
 
     expect(success).toBe(false);
   });
@@ -79,7 +79,7 @@ describe('verifier class', () => {
 
     const response = getReCaptcha3Response(reCaptchaV3PassingScore);
 
-    const [success] = verifier._getResult(response);
+    const [success] = verifier['_getResult'](response);
 
     expect(success).toBe(true);
   });
@@ -88,10 +88,10 @@ describe('verifier class', () => {
     verifier.config({ reCaptchaV3SecretKey });
 
     const response = getReCaptcha3Response(
-      verifier._reCaptchaV3.passingScore! - 0.1
+      verifier['_reCaptchaV3'].passingScore! - 0.1
     );
 
-    const [success] = verifier._getResult(response);
+    const [success] = verifier['_getResult'](response);
 
     expect(success).toBe(false);
   });
